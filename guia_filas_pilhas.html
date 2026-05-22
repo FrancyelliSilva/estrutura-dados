@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Filas e Pilhas em Python — Estrutura de Dados</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #f3f0eb;
+    --card: #ffffff;
+    --border: #e8e2d9;
+    --text: #2c2a26;
+    --muted: #7a7570;
+    --accent-stack: #c4a882;
+    --accent-stack-light: #f5edd8;
+    --accent-queue: #8fb3a0;
+    --accent-queue-light: #e4f0ea;
+    --accent-code: #b5a0d0;
+    --accent-code-light: #ede8f7;
+    --accent-warn: #d4a574;
+    --accent-warn-light: #fdf0e0;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  header {
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 1.25rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent-stack);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 500px;
+  }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .toc-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .toc ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 2rem;
+  }
+
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toc a:hover { color: var(--accent-stack); }
+
+  .toc a::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-stack { background: var(--accent-stack); }
+  .dot-queue { background: var(--accent-queue); }
+  .dot-compare { background: var(--accent-code); }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.65rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  p {
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-size: 15px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-stack { border-left: 3px solid var(--accent-stack); }
+  .card-queue { border-left: 3px solid var(--accent-queue); }
+  .card-tip { border-left: 3px solid var(--accent-warn); background: var(--accent-warn-light); }
+
+  .analogy {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .analogy-box {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .analogy-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .analogy-title {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .analogy-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Visualização de pilha */
+  .stack-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+  }
+
+  .stack-arrow {
+    font-size: 11px;
+    color: var(--accent-stack);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stack-item {
+    width: 220px;
+    padding: 10px 20px;
+    border: 1px solid var(--accent-stack);
+    background: var(--accent-stack-light);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .stack-item:first-of-type {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: var(--accent-stack);
+    color: white;
+    font-weight: 500;
+  }
+
+  .stack-item:last-of-type {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  }
+
+  .stack-base {
+    width: 220px;
+    height: 4px;
+    background: var(--accent-stack);
+    border-radius: 0 0 4px 4px;
+    margin-top: -1px;
+  }
+
+  /* Visualização de fila */
+  .queue-visual {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .queue-label-in {
+    font-size: 11px;
+    color: var(--accent-queue);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    padding: 8px 4px;
+    border: 1px solid var(--accent-queue);
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    background: var(--accent-queue-light);
+    flex-shrink: 0;
+  }
+
+  .queue-items {
+    display: flex;
+  }
+
+  .queue-item {
+    padding: 10px 18px;
+    border-top: 1px solid var(--accent-queue);
+    border-bottom: 1px solid var(--accent-queue);
+    border-right: 1px solid var(--accent-queue);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--accent-queue-light);
+    white-space: nowrap;
+  }
+
+  .queue-item.first {
+    background: var(--accent-queue);
+    color: white;
+    font-weight: 500;
+  }
+
+  .queue-label-out {
+    font-size: 11px;
+    color: var(--accent-queue);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    writing-mode: vertical-rl;
+    padding: 8px 4px;
+    border: 1px solid var(--accent-queue);
+    border-left: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--accent-queue-light);
+    flex-shrink: 0;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: #f8f6f2;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block .lang-tag {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  .kw { color: #b5648a; font-weight: 500; }
+  .fn { color: #6a9fc0; }
+  .str { color: #7aab85; }
+  .cm { color: var(--muted); font-style: italic; }
+  .num { color: var(--accent-warn); }
+
+  /* Tabela de comparação */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 1rem;
+  }
+
+  .compare-table th {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .compare-table td {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .compare-table tr:nth-child(even) td {
+    background: var(--surface);
+  }
+
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 99px;
+  }
+
+  .pill-stack { background: var(--accent-stack-light); color: #8a6840; }
+  .pill-queue { background: var(--accent-queue-light); color: #3d6e54; }
+  .pill-both { background: var(--accent-code-light); color: #6048a0; }
+
+  /* Exercícios */
+  .exercise {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .exercise-num {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .exercise-q {
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0;
+    font-size: 14.5px;
+  }
+
+  details {
+    margin-top: 0.75rem;
+  }
+
+  summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+
+  summary::before {
+    content: '▶';
+    font-size: 9px;
+    transition: transform 0.2s;
+  }
+
+  details[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .answer {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+    margin-top: 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1rem;
+  }
+
+  .complexity-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+  }
+
+  .complexity-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+  }
+
+  .op-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .op-row:last-child { border-bottom: none; }
+
+  .op-name { font-family: 'DM Mono', monospace; color: var(--text); }
+  .op-big-o { font-family: 'DM Mono', monospace; font-weight: 500; color: var(--accent-stack); }
+  .op-big-o.green { color: var(--accent-queue); }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 2rem; }
+    .toc ul { grid-template-columns: 1fr; }
+    .analogy { flex-direction: column; }
+    .complexity-grid { grid-template-columns: 1fr; }
+    .compare-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">Estrutura de Dados · Sistemas de Informação</div>
+    <h1>Filas &amp; <em>Pilhas</em><br>em Python</h1>
+    <p class="subtitle">Um guia de estudo prático com visualizações, exemplos de código e exercícios resolvidos.</p>
+  </header>
+
+  <nav class="toc" aria-label="Sumário">
+    <div class="toc-label">Sumário</div>
+    <ul>
+      <li><a href="#pilhas">O que é uma Pilha?</a></li>
+      <li><a href="#filas">O que é uma Fila?</a></li>
+      <li><a href="#pilha-ops">Operações da Pilha</a></li>
+      <li><a href="#fila-ops">Operações da Fila</a></li>
+      <li><a href="#complexidade">Complexidade</a></li>
+      <li><a href="#comparacao">Pilha vs Fila</a></li>
+      <li><a href="#aplicacoes">Aplicações Reais</a></li>
+      <li><a href="#exercicios">Exercícios</a></li>
+    </ul>
+  </nav>
+
+  <!-- ============ PILHAS ============ -->
+  <section id="pilhas">
+    <div class="section-label">
+      <span class="section-dot dot-stack"></span>
+      <h2>Pilha <span style="font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--muted)">Stack</span></h2>
+    </div>
+
+    <p>Uma <strong>pilha</strong> é uma estrutura de dados linear que segue o princípio <strong>LIFO</strong> — <em>Last In, First Out</em> — onde o último elemento inserido é o primeiro a ser removido.</p>
+
+    <div class="analogy">
+      <div class="analogy-box">
+        <span class="analogy-icon">🍽️</span>
+        <div class="analogy-title">Pilha de pratos</div>
+        <div class="analogy-desc">Você empilha pratos e sempre pega o do topo — o último colocado é o primeiro retirado.</div>
+      </div>
+      <div class="analogy-box">
+        <span class="analogy-icon">↩️</span>
+        <div class="analogy-title">Ctrl + Z</div>
+        <div class="analogy-desc">Desfazer ações em editores: a última ação realizada é a primeira a ser desfeita.</div>
+      </div>
+      <div class="analogy-box">
+        <span class="analogy-icon">📚</span>
+        <div class="analogy-title">Histórico do navegador</div>
+        <div class="analogy-desc">Cada página visitada é empilhada. O botão "voltar" remove do topo.</div>
+      </div>
+    </div>
+
+    <h3>Visualização</h3>
+    <div style="display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap;">
+      <div>
+        <div class="stack-visual">
+          <div class="stack-arrow">← push / pop aqui (topo)</div>
+          <div class="stack-item">"C"&nbsp;&nbsp;← topo</div>
+          <div class="stack-item">"B"</div>
+          <div class="stack-item">"A"</div>
+          <div class="stack-base"></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:4px;">Inserção e remoção sempre pelo topo</p>
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.7;">O elemento destacado em cima é sempre o <strong>topo</strong> da pilha — o único ponto de acesso. Não é possível remover "A" sem antes remover "C" e "B".</p>
+      </div>
+    </div>
+
+    <h3 id="pilha-ops">Implementação em Python</h3>
+    <p>Python não tem um tipo nativo "pilha", mas a lista (<code>list</code>) funciona perfeitamente com os métodos <code>append()</code> e <code>pop()</code>.</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="cm"># Criando e usando uma pilha com lista</span>
+pilha = []
+
+<span class="cm"># push — adiciona no topo</span>
+pilha.<span class="fn">append</span>(<span class="str">"A"</span>)   <span class="cm"># pilha: ["A"]</span>
+pilha.<span class="fn">append</span>(<span class="str">"B"</span>)   <span class="cm"># pilha: ["A", "B"]</span>
+pilha.<span class="fn">append</span>(<span class="str">"C"</span>)   <span class="cm"># pilha: ["A", "B", "C"]</span>
+
+<span class="cm"># peek — ver o topo sem remover</span>
+topo = pilha[<span class="num">-1</span>]    <span class="cm"># topo: "C"</span>
+
+<span class="cm"># pop — remove do topo</span>
+removido = pilha.<span class="fn">pop</span>()  <span class="cm"># removido: "C", pilha: ["A", "B"]</span>
+
+<span class="cm"># Verificar se está vazia</span>
+<span class="kw">if not</span> pilha:
+    <span class="fn">print</span>(<span class="str">"Pilha vazia!"</span>)</pre>
+    </div>
+
+    <div class="card card-tip">
+      <p style="margin:0;font-size:13.5px;">💡 <strong>Por que funciona?</strong> O método <code>append()</code> sempre adiciona ao final da lista (que representa o topo) e <code>pop()</code> sem argumento remove exatamente o último elemento — ambas operações em <strong>O(1)</strong>.</p>
+    </div>
+
+    <h3>Implementação com <code>collections.deque</code></h3>
+    <p>Para uso em produção, <code>deque</code> é preferível por ser thread-safe e ter desempenho consistente:</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+pilha = <span class="fn">deque</span>()
+
+pilha.<span class="fn">append</span>(<span class="num">10</span>)   <span class="cm"># push</span>
+pilha.<span class="fn">append</span>(<span class="num">20</span>)
+pilha.<span class="fn">append</span>(<span class="num">30</span>)
+
+valor = pilha.<span class="fn">pop</span>()  <span class="cm"># remove 30 (LIFO)</span>
+<span class="fn">print</span>(valor)         <span class="cm"># 30</span></pre>
+    </div>
+
+    <h3>Exemplo prático: verificar parênteses balanceados</h3>
+    <p>Um dos usos clássicos de pilha — verificar se uma expressão matemática tem parênteses corretamente fechados:</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="kw">def</span> <span class="fn">balanceado</span>(expressao):
+    pilha = []
+    abertura = <span class="str">"({["</span>
+    fechamento = <span class="str">")}"</span> + <span class="str">"]"</span>
+    pares = {<span class="str">")"</span>: <span class="str">"("</span>, <span class="str">"}"</span>: <span class="str">"{"</span>, <span class="str">"]"</span>: <span class="str">"["</span>}
+
+    <span class="kw">for</span> char <span class="kw">in</span> expressao:
+        <span class="kw">if</span> char <span class="kw">in</span> abertura:
+            pilha.<span class="fn">append</span>(char)       <span class="cm"># empilha abertura</span>
+        <span class="kw">elif</span> char <span class="kw">in</span> fechamento:
+            <span class="kw">if not</span> pilha <span class="kw">or</span> pilha[<span class="num">-1</span>] != pares[char]:
+                <span class="kw">return</span> <span class="kw">False</span>           <span class="cm"># fechamento sem par</span>
+            pilha.<span class="fn">pop</span>()              <span class="cm"># encontrou par, remove</span>
+
+    <span class="kw">return</span> <span class="fn">len</span>(pilha) == <span class="num">0</span>         <span class="cm"># pilha vazia = tudo fechado</span>
+
+<span class="fn">print</span>(<span class="fn">balanceado</span>(<span class="str">"(a + [b * c])"</span>))  <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">balanceado</span>(<span class="str">"(a + [b * c)"</span>))   <span class="cm"># False</span></pre>
+    </div>
+  </section>
+
+  <!-- ============ FILAS ============ -->
+  <section id="filas">
+    <div class="section-label">
+      <span class="section-dot dot-queue"></span>
+      <h2>Fila <span style="font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--muted)">Queue</span></h2>
+    </div>
+
+    <p>Uma <strong>fila</strong> é uma estrutura linear que segue o princípio <strong>FIFO</strong> — <em>First In, First Out</em> — o primeiro elemento inserido é o primeiro a ser removido.</p>
+
+    <div class="analogy">
+      <div class="analogy-box">
+        <span class="analogy-icon">🏦</span>
+        <div class="analogy-title">Fila do banco</div>
+        <div class="analogy-desc">Quem chega primeiro, é atendido primeiro. Novos clientes entram pelo final.</div>
+      </div>
+      <div class="analogy-box">
+        <span class="analogy-icon">🖨️</span>
+        <div class="analogy-title">Fila de impressão</div>
+        <div class="analogy-desc">O primeiro documento enviado é o primeiro impresso. Novos documentos vão para o final.</div>
+      </div>
+      <div class="analogy-box">
+        <span class="analogy-icon">🌐</span>
+        <div class="analogy-title">Pacotes de rede</div>
+        <div class="analogy-desc">Roteadores processam pacotes na ordem em que chegam — o primeiro a chegar, parte primeiro.</div>
+      </div>
+    </div>
+
+    <h3>Visualização</h3>
+    <div style="margin:1.5rem 0;">
+      <div class="queue-visual">
+        <div class="queue-label-in">enqueue →</div>
+        <div class="queue-items">
+          <div class="queue-item">"D"</div>
+          <div class="queue-item">"C"</div>
+          <div class="queue-item">"B"</div>
+          <div class="queue-item first">"A" ← frente</div>
+        </div>
+        <div class="queue-label-out">← dequeue</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px;">Inserção pela traseira, remoção pela frente</p>
+    </div>
+
+    <h3 id="fila-ops">Implementação em Python</h3>
+    <p>O módulo <code>collections.deque</code> é a forma recomendada para filas — eficiente tanto para inserção quanto remoção:</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+fila = <span class="fn">deque</span>()
+
+<span class="cm"># enqueue — adiciona no final da fila</span>
+fila.<span class="fn">append</span>(<span class="str">"A"</span>)       <span class="cm"># fila: deque(["A"])</span>
+fila.<span class="fn">append</span>(<span class="str">"B"</span>)       <span class="cm"># fila: deque(["A", "B"])</span>
+fila.<span class="fn">append</span>(<span class="str">"C"</span>)       <span class="cm"># fila: deque(["A", "B", "C"])</span>
+
+<span class="cm"># peek — ver a frente sem remover</span>
+frente = fila[<span class="num">0</span>]       <span class="cm"># frente: "A"</span>
+
+<span class="cm"># dequeue — remove da frente (FIFO)</span>
+removido = fila.<span class="fn">popleft</span>()  <span class="cm"># removido: "A"</span>
+                             <span class="cm"># fila: deque(["B", "C"])</span>
+
+<span class="cm"># Tamanho da fila</span>
+<span class="fn">print</span>(<span class="fn">len</span>(fila))         <span class="cm"># 2</span></pre>
+    </div>
+
+    <div class="card card-tip">
+      <p style="margin:0;font-size:13.5px;">⚠️ <strong>Atenção!</strong> Não use <code>list.pop(0)</code> para filas — essa operação é <strong>O(n)</strong> porque desloca todos os elementos. Use sempre <code>deque.popleft()</code>, que é <strong>O(1)</strong>.</p>
+    </div>
+
+    <h3>Usando <code>queue.Queue</code> (thread-safe)</h3>
+    <p>Para programas concorrentes ou multithread, o módulo padrão <code>queue</code> oferece sincronização automática:</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="kw">import</span> queue
+
+fila = queue.<span class="fn">Queue</span>()
+
+fila.<span class="fn">put</span>(<span class="str">"tarefa_1"</span>)   <span class="cm"># enqueue</span>
+fila.<span class="fn">put</span>(<span class="str">"tarefa_2"</span>)
+fila.<span class="fn">put</span>(<span class="str">"tarefa_3"</span>)
+
+<span class="kw">while not</span> fila.<span class="fn">empty</span>():
+    tarefa = fila.<span class="fn">get</span>()   <span class="cm"># dequeue — FIFO garantido</span>
+    <span class="fn">print</span>(<span class="str">f"Processando: {tarefa}"</span>)</pre>
+    </div>
+
+    <h3>Exemplo prático: BFS — Busca em Largura</h3>
+    <p>Filas são fundamentais para o algoritmo BFS (Breadth-First Search), que percorre grafos nível por nível:</p>
+
+    <div class="code-block">
+      <span class="lang-tag">python</span>
+      <pre><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">def</span> <span class="fn">bfs</span>(grafo, inicio):
+    visitados = <span class="fn">set</span>()
+    fila = <span class="fn">deque</span>([inicio])
+    visitados.<span class="fn">add</span>(inicio)
+    ordem = []
+
+    <span class="kw">while</span> fila:
+        no = fila.<span class="fn">popleft</span>()         <span class="cm"># processa o mais antigo</span>
+        ordem.<span class="fn">append</span>(no)
+
+        <span class="kw">for</span> vizinho <span class="kw">in</span> grafo[no]:
+            <span class="kw">if</span> vizinho <span class="kw">not in</span> visitados:
+                visitados.<span class="fn">add</span>(vizinho)
+                fila.<span class="fn">append</span>(vizinho)  <span class="cm"># enfileira vizinhos</span>
+
+    <span class="kw">return</span> ordem
+
+grafo = {<span class="str">"A"</span>: [<span class="str">"B"</span>, <span class="str">"C"</span>], <span class="str">"B"</span>: [<span class="str">"D"</span>], <span class="str">"C"</span>: [<span class="str">"D"</span>], <span class="str">"D"</span>: []}
+<span class="fn">print</span>(<span class="fn">bfs</span>(grafo, <span class="str">"A"</span>))  <span class="cm"># ["A", "B", "C", "D"]</span></pre>
+    </div>
+  </section>
+
+  <!-- ============ COMPLEXIDADE ============ -->
+  <section id="complexidade">
+    <div class="section-label">
+      <span class="section-dot dot-compare"></span>
+      <h2>Complexidade de tempo</h2>
+    </div>
+    <p>Ambas as estruturas são eficientes nas suas operações principais — todas em tempo constante quando implementadas corretamente.</p>
+
+    <div class="complexity-grid">
+      <div class="complexity-card">
+        <div class="complexity-title">Pilha (Stack)</div>
+        <div class="op-row"><span class="op-name">push()</span><span class="op-big-o">O(1)</span></div>
+        <div class="op-row"><span class="op-name">pop()</span><span class="op-big-o">O(1)</span></div>
+        <div class="op-row"><span class="op-name">peek()</span><span class="op-big-o">O(1)</span></div>
+        <div class="op-row"><span class="op-name">is_empty()</span><span class="op-big-o">O(1)</span></div>
+        <div class="op-row"><span class="op-name">busca</span><span class="op-big-o" style="color:#d4a574">O(n)</span></div>
+      </div>
+      <div class="complexity-card">
+        <div class="complexity-title">Fila (Queue)</div>
+        <div class="op-row"><span class="op-name">enqueue()</span><span class="op-big-o green">O(1)</span></div>
+        <div class="op-row"><span class="op-name">dequeue()</span><span class="op-big-o green">O(1)</span></div>
+        <div class="op-row"><span class="op-name">peek()</span><span class="op-big-o green">O(1)</span></div>
+        <div class="op-row"><span class="op-name">is_empty()</span><span class="op-big-o green">O(1)</span></div>
+        <div class="op-row"><span class="op-name">busca</span><span class="op-big-o" style="color:#d4a574">O(n)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPARAÇÃO ============ -->
+  <section id="comparacao">
+    <div class="section-label">
+      <span class="section-dot dot-compare"></span>
+      <h2>Pilha vs Fila</h2>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Característica</th>
+          <th>Pilha <span class="pill pill-stack">LIFO</span></th>
+          <th>Fila <span class="pill pill-queue">FIFO</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Princípio</td>
+          <td>Último a entrar, primeiro a sair</td>
+          <td>Primeiro a entrar, primeiro a sair</td>
+        </tr>
+        <tr>
+          <td>Inserção</td>
+          <td>Sempre no topo</td>
+          <td>Sempre no final (traseira)</td>
+        </tr>
+        <tr>
+          <td>Remoção</td>
+          <td>Sempre do topo</td>
+          <td>Sempre da frente</td>
+        </tr>
+        <tr>
+          <td>Acesso</td>
+          <td>Apenas o topo é acessível</td>
+          <td>Apenas a frente é acessível</td>
+        </tr>
+        <tr>
+          <td>Python nativo</td>
+          <td><code>list</code>, <code>deque</code></td>
+          <td><code>deque</code>, <code>queue.Queue</code></td>
+        </tr>
+        <tr>
+          <td>Operação principal</td>
+          <td><code>append()</code> / <code>pop()</code></td>
+          <td><code>append()</code> / <code>popleft()</code></td>
+        </tr>
+        <tr>
+          <td>Analogia</td>
+          <td>Pilha de pratos, histórico de ações</td>
+          <td>Fila de banco, fila de impressão</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ APLICAÇÕES ============ -->
+  <section id="aplicacoes">
+    <div class="section-label">
+      <span class="section-dot dot-stack"></span>
+      <h2>Aplicações reais</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <h3 style="color:var(--accent-stack);">Pilhas são usadas em…</h3>
+        <div class="card card-stack" style="padding:1.25rem;">
+          <ul style="list-style:none;font-size:13.5px;line-height:2;">
+            <li>📝 Desfazer/Refazer (Ctrl+Z)</li>
+            <li>🌐 Histórico do navegador</li>
+            <li>⚙️ Chamadas de funções (call stack)</li>
+            <li>🧮 Avaliação de expressões</li>
+            <li>🔍 DFS — Busca em Profundidade</li>
+            <li>📦 Parsing de XML/HTML</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:var(--accent-queue);">Filas são usadas em…</h3>
+        <div class="card card-queue" style="padding:1.25rem;">
+          <ul style="list-style:none;font-size:13.5px;line-height:2;">
+            <li>🖨️ Fila de impressão</li>
+            <li>🌐 BFS — Busca em Largura</li>
+            <li>📨 Filas de mensagens (RabbitMQ)</li>
+            <li>🖥️ Agendamento de processos</li>
+            <li>🔄 Buffers de streaming</li>
+            <li>🌍 Cache de requisições web</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXERCÍCIOS ============ -->
+  <section id="exercicios">
+    <div class="section-label">
+      <span class="section-dot dot-compare"></span>
+      <h2>Exercícios práticos</h2>
+    </div>
+
+    <div class="exercise">
+      <div class="exercise-num">Exercício 01 — Pilha</div>
+      <p class="exercise-q">Implemente uma função <code>inverter_string(s)</code> que usa uma pilha para inverter uma string sem usar slicing (<code>[::-1]</code>). Por exemplo: <code>inverter_string("hello")</code> deve retornar <code>"olleh"</code>.</p>
+      <details>
+        <summary>Ver solução</summary>
+        <div class="answer">
+          <pre style="font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.8;"><span class="kw">def</span> <span class="fn">inverter_string</span>(s):
+    pilha = <span class="fn">list</span>(s)   <span class="cm"># cada char é empilhado</span>
+    resultado = []
+    <span class="kw">while</span> pilha:
+        resultado.<span class="fn">append</span>(pilha.<span class="fn">pop</span>())
+    <span class="kw">return</span> <span class="str">""</span>.<span class="fn">join</span>(resultado)
+
+<span class="fn">print</span>(<span class="fn">inverter_string</span>(<span class="str">"hello"</span>))  <span class="cm"># "olleh"</span></pre>
+          <p style="margin-top:0.75rem;font-size:13px;color:var(--muted);">Cada caractere é empilhado e, ao desempilhar, a ordem é invertida — exatamente o comportamento LIFO.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="exercise">
+      <div class="exercise-num">Exercício 02 — Fila</div>
+      <p class="exercise-q">Crie uma fila para simular um sistema de atendimento. A fila deve suportar: adicionar clientes (<code>chegar(nome)</code>), atender o próximo (<code>atender()</code>) e ver quem está na frente (<code>proximo()</code>).</p>
+      <details>
+        <summary>Ver solução</summary>
+        <div class="answer">
+          <pre style="font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.8;"><span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">class</span> <span class="fn">SistemaAtendimento</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.fila = <span class="fn">deque</span>()
+
+    <span class="kw">def</span> <span class="fn">chegar</span>(self, nome):
+        self.fila.<span class="fn">append</span>(nome)
+        <span class="fn">print</span>(<span class="str">f"{nome} entrou na fila. Posição: {len(self.fila)}"</span>)
+
+    <span class="kw">def</span> <span class="fn">atender</span>(self):
+        <span class="kw">if not</span> self.fila:
+            <span class="fn">print</span>(<span class="str">"Fila vazia!"</span>)
+            <span class="kw">return</span>
+        cliente = self.fila.<span class="fn">popleft</span>()
+        <span class="fn">print</span>(<span class="str">f"Atendendo: {cliente}"</span>)
+
+    <span class="kw">def</span> <span class="fn">proximo</span>(self):
+        <span class="kw">if</span> self.fila:
+            <span class="fn">print</span>(<span class="str">f"Próximo: {self.fila[0]}"</span>)</pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="exercise">
+      <div class="exercise-num">Exercício 03 — Teórico</div>
+      <p class="exercise-q">Considere a sequência de operações abaixo em uma pilha inicialmente vazia. Qual é o conteúdo final da pilha, da base ao topo?<br><br><code>push(5) → push(3) → push(7) → pop() → push(1) → pop() → push(9)</code></p>
+      <details>
+        <summary>Ver solução</summary>
+        <div class="answer">
+          <p style="font-size:13.5px;line-height:1.9;">
+            push(5) → [5]<br>
+            push(3) → [5, 3]<br>
+            push(7) → [5, 3, 7]<br>
+            pop() remove 7 → [5, 3]<br>
+            push(1) → [5, 3, 1]<br>
+            pop() remove 1 → [5, 3]<br>
+            push(9) → [5, 3, 9]<br><br>
+            <strong>Conteúdo final:</strong> base → 5, 3, topo → 9
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <div class="exercise">
+      <div class="exercise-num">Exercício 04 — Desafio</div>
+      <p class="exercise-q">Implemente uma fila usando apenas duas pilhas. As operações <code>enqueue(x)</code> e <code>dequeue()</code> devem se comportar como uma fila FIFO. <em>Dica: use duas listas como pilhas.</em></p>
+      <details>
+        <summary>Ver solução</summary>
+        <div class="answer">
+          <pre style="font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.8;"><span class="kw">class</span> <span class="fn">FilaComPilhas</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.entrada = []   <span class="cm"># pilha de entrada</span>
+        self.saida = []     <span class="cm"># pilha de saída</span>
+
+    <span class="kw">def</span> <span class="fn">enqueue</span>(self, x):
+        self.entrada.<span class="fn">append</span>(x)  <span class="cm"># sempre na entrada</span>
+
+    <span class="kw">def</span> <span class="fn">dequeue</span>(self):
+        <span class="kw">if not</span> self.saida:
+            <span class="cm"># transfere entrada → saída (inverte ordem)</span>
+            <span class="kw">while</span> self.entrada:
+                self.saida.<span class="fn">append</span>(self.entrada.<span class="fn">pop</span>())
+        <span class="kw">if not</span> self.saida:
+            <span class="kw">raise</span> <span class="fn">IndexError</span>(<span class="str">"Fila vazia"</span>)
+        <span class="kw">return</span> self.saida.<span class="fn">pop</span>()   <span class="cm"># FIFO garantido</span></pre>
+          <p style="margin-top:0.75rem;font-size:13px;color:var(--muted);">Ao transferir todos os elementos da pilha de entrada para a de saída, a ordem se inverte — transformando o comportamento LIFO em FIFO.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    <span>Estrutura de Dados · Sistemas de Informação</span>
+    <span>Python 3.x · <code>collections.deque</code></span>
+  </footer>
+
+</div>
+</body>
+</html>
