@@ -28,7 +28,7 @@ while True:
                     verde.entrar(paciente)
                     print(f"{paciente} entrou na fila verde")
                 else:
-                    vermelho(paciente)
+                    vermelho.entrar(paciente)
                     print(f"{paciente} entrou na fila vermelha")
             else:
                 print("Não há mais pacientes na fila de triagem")
