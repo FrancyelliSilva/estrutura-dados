@@ -1,43 +1,50 @@
 # Estrutura de Dados
 
-Este repositório contém atividades realizadas na disciplina de Estruturas de Dados do curso de Bacharelado em Sistemas de Informação da Universidade Tecnológica Federal do Paraná (UTFPR).
+Este repositório reúne atividades da disciplina de Estruturas de Dados do curso de Bacharelado em Sistemas de Informação da UTFPR.
 
-## Sobre o projeto
+## 📘 Sobre o projeto
 
-O projeto apresenta uma implementação simples de filas em Python, com um exemplo de aplicação que simula o fluxo de pacientes em um atendimento médico/triagem.
+O material apresenta exemplos práticos de estruturas lineares em Python, com foco em filas e pilhas.
 
-## Conteúdo do repositório
+## 📂 Conteúdo do repositório
 
-- `aula-fila/fila.py`: classe `Fila` que implementa operações básicas de fila (entrar, chamar, size, isEmpty, proximo e verFila).
-- `aula-fila/main.py`: script interativo que usa a fila para gerenciar pacientes em triagem e em filas de atendimento verde/vermelho.
+### Filas
 
-## Como usar
+- `aula-fila/fila.py`: implementação da classe `Fila` com operações básicas:
+  - `entrar`
+  - `chamar`
+  - `size`
+  - `isEmpty`
+  - `proximo`
+  - `verFila`
 
-1. Navegue até a pasta do projeto:
-   ```bash
-   cd aula-fila
-   ```
+- `aula-fila/main.py`: simulação de triagem e atendimento médico usando filas.
 
-2. Execute o script em Python:
-   ```bash
-   python main.py
-   ```
+### Pilha
 
-3. Siga o menu para:
-   - adicionar pacientes à fila de triagem
-   - chamar pacientes para classificação
-   - atender pacientes das filas verde e vermelha
+- `aula-pilha/simulador-navegacao.py`: simulador simples de navegação entre páginas com os comandos:
+  - `visitar <url>`
+  - `voltar`
+  - `avancar`
+  - `mostrar`
+  - `sair`
 
-## Descrição da lógica
+### Exemplo adicional
 
-- Cada paciente entra na fila de triagem.
-- Ao realizar a triagem, o paciente é direcionado para a fila verde ou vermelha com base no comprimento do nome (exemplo de critério simplificado).
-- O atendimento dá prioridade à fila vermelha.
+- `pronto-socorro/fila.py`: implementação relacionada ao fluxo de atendimento em pronto-socorro.
+- `pronto-socorro/main.py`: script de interação para o mesmo cenário.
 
-## Observações
+## ⚠️ Observações
 
-- Este é um exercício de aprendizagem de estruturas de dados e manipulação de filas em Python.
-- A lógica de triagem é apenas ilustrativa e pode ser adaptada para critérios mais realistas.
+- O diretório `pronto-socorro` está presente no repositório, mas não foi validado para execução porque o arquivo `pronto-socorro/fila.py` contém erro de sintaxe.
+- Os exemplos de fila e pilha foram validados localmente com execução básica.
+
+## 🎯 Objetivo didático
+
+Os exercícios servem para praticar:
+- operações com filas
+- controle de fluxo em pilhas
+- uso de estruturas simples para modelar cenários reais
 
 ## UTFPR
 
