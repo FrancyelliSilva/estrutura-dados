@@ -1,35 +1,31 @@
 class Fila:
     def __init__(self):
-        self._pacientes = []
+        self._triagem = []      
 
     def entrar(self, pacientes):
-        self._pacientes.append(pacientes)
+        self._triagem.append(pacientes)
     
     def chamar(self):
-        if len(self._pacientes) > 0:
-            return self._pacientes.pop(0)
+        if len(self._triagem) > 0:
+            return self._triagem.pop(0)
         return None
-
-    def medico(self)
-        self._medico = ['Primeiro', 'Segundo', 'Terceiro']
-
-    def chamar_medico(self):
-        return self._medico.pop(0) 
-
-    def ultimo(self):
-        self._medico.append(medico)
-        
+            
     def size(self):
-        return len(self._pacientes)
+        return len(self._triagem)
     
     def isEmpty(self):
-        return len(self._pacientes) == 0
-
-    def proximo(self):
-        if not self.isEmpty():
-            return self._pacientes[0]
-        return None
+        return len(self._triagem) == 0   
 
     def verFila(self):
-        print(self._pacientes)
+        return list(self._triagem)
+
+    def verMedicos(self):
+        return list(self._medicos)
+
+    def chamarMedico(self):
+        return self._medicos.pop(0)
+
+    def entrarMedico(self, medico):
+        self._medicos.append(medico)
+    
 
