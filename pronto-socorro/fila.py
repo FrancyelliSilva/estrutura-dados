@@ -18,14 +18,3 @@ class Fila:
 
     def verFila(self):
         return list(self._triagem)
-
-    def verMedicos(self):
-        return list(self._medicos)
-
-    def chamarMedico(self):
-        return self._medicos.pop(0)
-
-    def entrarMedico(self, medico):
-        self._medicos.append(medico)
-    
-
